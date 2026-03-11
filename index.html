@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Perigoso ou Amigo</title>
+<title>Cartas dos Animais</title>
 
 <style>
 
@@ -159,6 +159,11 @@ carta.onclick=()=>{
 
 if(cartaAtual!=null) return
 
+// limpa resposta anterior
+document.getElementById("resposta").innerHTML=""
+document.getElementById("explicacao").innerHTML=""
+
+// vira carta
 carta.classList.add("virada")
 
 carta.innerHTML = `
