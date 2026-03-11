@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Perigoso ou Amigo</title>
+<title>Perigos@ ou Amig@</title>
 
 <style>
 
@@ -18,43 +18,60 @@ margin-top:20px;
 
 #tabuleiro{
 display:grid;
-grid-template-columns: repeat(4,130px);
+grid-template-columns: repeat(4,140px);
 gap:20px;
 justify-content:center;
 margin-top:30px;
 }
 
 .carta{
-width:130px;
-height:130px;
-background:#4a90e2;
-border-radius:10px;
+width:140px;
+height:140px;
+perspective:1000px;
+cursor:pointer;
+}
+
+.carta-inner{
+position:relative;
+width:100%;
+height:100%;
+transition:transform 0.6s;
+transform-style:preserve-3d;
+}
+
+.carta.virada .carta-inner{
+transform:rotateY(180deg);
+}
+
+.carta-frente, .carta-verso{
+position:absolute;
+width:100%;
+height:100%;
+backface-visibility:hidden;
+border-radius:12px;
 display:flex;
 flex-direction:column;
 align-items:center;
 justify-content:center;
+}
+
+.carta-frente{
+background:#4a90e2;
 color:white;
-cursor:pointer;
-font-size:22px;
+font-size:28px;
 }
 
-.numero{
-font-size:26px;
-font-weight:bold;
-}
-
-.carta.virada{
+.carta-verso{
 background:white;
-color:black;
+transform:rotateY(180deg);
 }
 
 .animal{
-font-size:45px;
+font-size:50px;
 }
 
 .nome{
 font-size:16px;
-margin-top:5px;
 }
 
 button{
@@ -77,7 +94,7 @@ color:white;
 }
 
 #resposta{
-font-size:22px;
+font-size:24px;
 margin-top:15px;
 }
 
@@ -89,13 +106,28 @@ margin-left:auto;
 margin-right:auto;
 }
 
+.confete{
+position:fixed;
+width:10px;
+height:10px;
+top:0;
+animation:fall 3s linear forwards;
+}
+
+@keyframes fall{
+to{
+transform:translateY(100vh);
+opacity:0;
+}
+}
+
 </style>
 </head>
 
 <body>
 
-<h1>Perigoso ou Amigo</h1>
-<p>Escolha uma carta e diga se o animal é perigoso ou amigo.</p>
+<h1>Perigos@ ou Amig@</h1>
+<p>Vire a carta e descubra!</p>
 
 <div id="tabuleiro"></div>
 
@@ -114,32 +146,48 @@ margin-right:auto;
 <div id="resposta"></div>
 <div id="explicacao"></div>
 
+<!-- música -->
+<audio id="musica" loop>
+<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7f1c88c7d0.mp3">
+</audio>
+
+<!-- som carta -->
+<audio id="somCarta">
+<source src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3">
+</audio>
+
 <script>
+
+const musica = document.getElementById("musica")
+
+document.body.addEventListener("click", () => {
+musica.play()
+},{once:true})
 
 const animais = [
 
-{nome:"Cachorro", emoji:"🐶", resposta:"amigo",
-explicacao:"O cachorro costuma ser um grande amigo das pessoas."},
+{nome:"Cachorro",emoji:"🐶",resposta:"amigo",
+explicacao:"O cachorro costuma ser amigo das pessoas."},
 
-{nome:"Leão", emoji:"🦁", resposta:"perigoso",
+{nome:"Leão",emoji:"🦁",resposta:"perigoso",
 explicacao:"O leão é forte e vive na natureza."},
 
-{nome:"Abelha", emoji:"🐝", resposta:"perigoso",
-explicacao:"A abelha pode picar se ficar assustada."},
+{nome:"Abelha",emoji:"🐝",resposta:"perigoso",
+explicacao:"A abelha pode picar."},
 
-{nome:"Sapo", emoji:"🐸", resposta:"amigo",
-explicacao:"O sapo ajuda a natureza comendo insetos."},
+{nome:"Sapo",emoji:"🐸",resposta:"amigo",
+explicacao:"O sapo ajuda a natureza."},
 
-{nome:"Tartaruga", emoji:"🐢", resposta:"amigo",
-explicacao:"A tartaruga é tranquila e não machuca pessoas."},
+{nome:"Tartaruga",emoji:"🐢",resposta:"amigo",
+explicacao:"A tartaruga é tranquila."},
 
-{nome:"Aranha", emoji:"🕷️", resposta:"perigoso",
+{nome:"Aranha",emoji:"🕷️",resposta:"perigoso",
 explicacao:"Algumas aranhas podem picar."},
 
-{nome:"Borboleta", emoji:"🦋", resposta:"amigo",
-explicacao:"A borboleta é delicada e ajuda a natureza."},
+{nome:"Borboleta",emoji:"🦋",resposta:"amigo",
+explicacao:"A borboleta é delicada."},
 
-{nome:"Cobra", emoji:"🐍", resposta:"perigoso",
+{nome:"Cobra",emoji:"🐍",resposta:"perigoso",
 explicacao:"Algumas cobras são perigosas."}
 
 ]
@@ -148,28 +196,36 @@ let cartaAtual = null
 
 const tabuleiro = document.getElementById("tabuleiro")
 
-animais.forEach((animal, index)=>{
+animais.forEach((animal,index)=>{
 
 let carta = document.createElement("div")
-carta.classList.add("carta")
+carta.className="carta"
 
-carta.innerHTML = `<div class="numero">${index+1}</div>`
+carta.innerHTML=`
+<div class="carta-inner">
+
+<div class="carta-frente">
+${index+1}
+</div>
+
+<div class="carta-verso">
+<div class="animal">${animal.emoji}</div>
+<div class="nome">${animal.nome}</div>
+</div>
+
+</div>
+`
 
 carta.onclick=()=>{
 
-if(cartaAtual!=null) return
+if(cartaAtual) return
 
-// limpa resposta anterior
+document.getElementById("somCarta").play()
+
 document.getElementById("resposta").innerHTML=""
 document.getElementById("explicacao").innerHTML=""
 
-// vira carta
 carta.classList.add("virada")
-
-carta.innerHTML = `
-<div class="animal">${animal.emoji}</div>
-<div class="nome">${animal.nome}</div>
-`
 
 cartaAtual = animal
 
@@ -181,13 +237,37 @@ tabuleiro.appendChild(carta)
 
 })
 
+function confete(){
+
+for(let i=0;i<80;i++){
+
+let c=document.createElement("div")
+
+c.className="confete"
+
+c.style.left=Math.random()*100+"vw"
+
+c.style.background=`hsl(${Math.random()*360},100%,50%)`
+
+c.style.animationDuration=2+Math.random()*2+"s"
+
+document.body.appendChild(c)
+
+setTimeout(()=>c.remove(),3000)
+
+}
+
+}
+
 function responder(escolha){
 
 if(!cartaAtual) return
 
-if(escolha == cartaAtual.resposta){
+if(escolha===cartaAtual.resposta){
 
 document.getElementById("resposta").innerHTML="🎉 Muito bem!"
+
+confete()
 
 }else{
 
@@ -195,10 +275,9 @@ document.getElementById("resposta").innerHTML="🙂 Vamos aprender!"
 
 }
 
-document.getElementById("explicacao").innerHTML =
-cartaAtual.explicacao
+document.getElementById("explicacao").innerHTML=cartaAtual.explicacao
 
-cartaAtual = null
+cartaAtual=null
 
 document.getElementById("botoes").style.display="none"
 
