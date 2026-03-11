@@ -2,36 +2,53 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Perigoso ou Amigo?</title>
+<title>Cartas dos Animais</title>
 
 <style>
 
 body{
 font-family: Arial;
-text-align:center;
 background:#f0f8ff;
-padding:20px;
+text-align:center;
 }
 
 h1{
-color:#333;
+margin-top:20px;
 }
 
-#mascote{
-font-size:70px;
+#tabuleiro{
+display:grid;
+grid-template-columns: repeat(4,120px);
+gap:20px;
+justify-content:center;
+margin-top:30px;
 }
 
-#animal{
-font-size:160px;
-margin:20px;
+.carta{
+width:120px;
+height:120px;
+background:#4a90e2;
+border-radius:10px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:40px;
+color:white;
+cursor:pointer;
+}
+
+.carta.virada{
+background:white;
+color:black;
+font-size:60px;
 }
 
 button{
-font-size:20px;
-padding:15px 30px;
+font-size:18px;
+padding:10px 20px;
 margin:10px;
 border:none;
-border-radius:12px;
+border-radius:8px;
 cursor:pointer;
 }
 
@@ -45,31 +62,14 @@ background:#4ecdc4;
 color:white;
 }
 
-#resultado{
-font-size:24px;
-margin-top:10px;
-font-weight:bold;
+#resposta{
+font-size:22px;
+margin-top:15px;
 }
 
 #explicacao{
 font-size:18px;
 margin-top:10px;
-color:#444;
-}
-
-#placar{
-margin-top:15px;
-font-size:22px;
-}
-
-.acerto{
-animation:pular 0.4s;
-}
-
-@keyframes pular{
-0%{transform:scale(1)}
-50%{transform:scale(1.3)}
-100%{transform:scale(1)}
 }
 
 </style>
@@ -77,160 +77,101 @@ animation:pular 0.4s;
 
 <body>
 
-<div id="mascote">⭐🙂</div>
+<h1>Cartas dos Animais</h1>
+<p>Vire uma carta e descubra se é perigoso ou amigo</p>
 
-<h1>Perigoso ou Amigo?</h1>
+<div id="tabuleiro"></div>
 
-<p>A estrelinha da evangelização quer aprender com vocês!</p>
+<div id="botoes" style="display:none">
 
-<div id="animal"></div>
-
-<div>
-
-<button class="perigoso" onclick="responder('perigoso')">
-⚠️ Perigoso
-</button>
-
-<button class="amigo" onclick="responder('amigo')">
-💛 Amigo
-</button>
+<button class="perigoso" onclick="responder('perigoso')">⚠️ Perigoso</button>
+<button class="amigo" onclick="responder('amigo')">💛 Amigo</button>
 
 </div>
 
-<div id="resultado"></div>
+<div id="resposta"></div>
 <div id="explicacao"></div>
-
-<br>
-
-<button onclick="proximo()">Próximo</button>
-
-<div id="placar">Pontos da turma: 0</div>
-
-<audio id="som">
-<source src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg">
-</audio>
 
 <script>
 
-const jogo = [
+const animais = [
 
-{
-animal:"🐶",
-resposta:"amigo",
-explicacao:"O cachorro costuma ser um grande amigo das pessoas."
-},
+{emoji:"🐶", resposta:"amigo",
+explicacao:"O cachorro costuma ser amigo das pessoas."},
 
-{
-animal:"🦁",
-resposta:"perigoso",
-explicacao:"O leão é forte e vive na natureza. Devemos observar de longe."
-},
+{emoji:"🦁", resposta:"perigoso",
+explicacao:"O leão é forte e vive na natureza."},
 
-{
-animal:"🐝",
-resposta:"perigoso",
-explicacao:"A abelha pode picar se ficar assustada, mas ajuda as flores."
-},
+{emoji:"🐝", resposta:"perigoso",
+explicacao:"A abelha pode picar se ficar assustada."},
 
-{
-animal:"🐸",
-resposta:"amigo",
-explicacao:"O sapo ajuda a natureza comendo insetos."
-},
+{emoji:"🐸", resposta:"amigo",
+explicacao:"O sapo ajuda a natureza comendo insetos."},
 
-{
-animal:"🐢",
-resposta:"amigo",
-explicacao:"A tartaruga é tranquila e não faz mal às pessoas."
-},
+{emoji:"🐢", resposta:"amigo",
+explicacao:"A tartaruga é tranquila."},
 
-{
-animal:"🕷️",
-resposta:"perigoso",
-explicacao:"Algumas aranhas podem picar, por isso não devemos mexer."
-},
+{emoji:"🕷️", resposta:"perigoso",
+explicacao:"Algumas aranhas podem picar."},
 
-{
-animal:"🦋",
-resposta:"amigo",
-explicacao:"A borboleta é delicada e ajuda a natureza."
-},
+{emoji:"🦋", resposta:"amigo",
+explicacao:"A borboleta é delicada."},
 
-{
-animal:"🐱",
-resposta:"amigo",
-explicacao:"O gato pode ser um companheiro carinhoso."
-},
-
-{
-animal:"🐍",
-resposta:"perigoso",
-explicacao:"Algumas cobras são perigosas e devemos manter distância."
-}
+{emoji:"🐍", resposta:"perigoso",
+explicacao:"Algumas cobras são perigosas."}
 
 ]
 
-let atual = 0
-let pontos = 0
+let cartaAtual = null
 
-function mostrar(){
+const tabuleiro = document.getElementById("tabuleiro")
 
-document.getElementById("animal").innerHTML = jogo[atual].animal
-document.getElementById("resultado").innerHTML = ""
-document.getElementById("explicacao").innerHTML = ""
+animais.forEach((animal, index)=>{
+
+let carta = document.createElement("div")
+carta.classList.add("carta")
+carta.innerHTML="❓"
+
+carta.onclick=()=>{
+
+if(cartaAtual!=null)return
+
+carta.classList.add("virada")
+carta.innerHTML=animal.emoji
+
+cartaAtual = animal
+
+document.getElementById("botoes").style.display="block"
 
 }
+
+tabuleiro.appendChild(carta)
+
+})
 
 function responder(escolha){
 
-let correto = jogo[atual].resposta
+if(!cartaAtual)return
 
-if(escolha == correto){
+let correta = cartaAtual.resposta
 
-document.getElementById("resultado").innerHTML = "🎉 Muito bem!"
-document.getElementById("som").play()
+if(escolha == correta){
 
-pontos++
-
-document.getElementById("animal").classList.add("acerto")
+document.getElementById("resposta").innerHTML="🎉 Muito bem!"
 
 }else{
 
-document.getElementById("resultado").innerHTML = "🙂 Vamos aprender!"
+document.getElementById("resposta").innerHTML="🙂 Vamos aprender!"
 
 }
 
-document.getElementById("explicacao").innerHTML =
-jogo[atual].explicacao
+document.getElementById("explicacao").innerHTML=cartaAtual.explicacao
 
-document.getElementById("placar").innerHTML =
-"Pontos da turma: " + pontos
+cartaAtual = null
 
-}
-
-function proximo(){
-
-document.getElementById("animal").classList.remove("acerto")
-
-atual++
-
-if(atual >= jogo.length){
-
-document.body.innerHTML = `
-<h1>🎉 Parabéns!</h1>
-<h2>Vocês aprenderam sobre os animais criados por Deus.</h2>
-<h2>Pontuação da turma: ${pontos}</h2>
-`
-
-return
+document.getElementById("botoes").style.display="none"
 
 }
-
-mostrar()
-
-}
-
-mostrar()
 
 </script>
 
