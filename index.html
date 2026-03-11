@@ -2,13 +2,13 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>Cartas dos Animais</title>
+<title>Perigoso ou Amigo</title>
 
 <style>
 
 body{
 font-family: Arial;
-background:#f0f8ff;
+background:#eef7ff;
 text-align:center;
 }
 
@@ -18,29 +18,43 @@ margin-top:20px;
 
 #tabuleiro{
 display:grid;
-grid-template-columns: repeat(4,120px);
+grid-template-columns: repeat(4,130px);
 gap:20px;
 justify-content:center;
 margin-top:30px;
 }
 
 .carta{
-width:120px;
-height:120px;
+width:130px;
+height:130px;
 background:#4a90e2;
 border-radius:10px;
 display:flex;
+flex-direction:column;
 align-items:center;
 justify-content:center;
-font-size:40px;
 color:white;
 cursor:pointer;
+font-size:22px;
+}
+
+.numero{
+font-size:26px;
+font-weight:bold;
 }
 
 .carta.virada{
 background:white;
 color:black;
-font-size:60px;
+}
+
+.animal{
+font-size:45px;
+}
+
+.nome{
+font-size:16px;
+margin-top:5px;
 }
 
 button{
@@ -70,6 +84,9 @@ margin-top:15px;
 #explicacao{
 font-size:18px;
 margin-top:10px;
+max-width:600px;
+margin-left:auto;
+margin-right:auto;
 }
 
 </style>
@@ -78,14 +95,19 @@ margin-top:10px;
 <body>
 
 <h1>Cartas dos Animais</h1>
-<p>Vire uma carta e descubra se é perigoso ou amigo</p>
+<p>Escolha uma carta, descubra o animal e diga se é perigoso ou amigo.</p>
 
 <div id="tabuleiro"></div>
 
 <div id="botoes" style="display:none">
 
-<button class="perigoso" onclick="responder('perigoso')">⚠️ Perigoso</button>
-<button class="amigo" onclick="responder('amigo')">💛 Amigo</button>
+<button class="perigoso" onclick="responder('perigoso')">
+⚠️ Perigoso
+</button>
+
+<button class="amigo" onclick="responder('amigo')">
+💛 Amigo
+</button>
 
 </div>
 
@@ -96,28 +118,28 @@ margin-top:10px;
 
 const animais = [
 
-{emoji:"🐶", resposta:"amigo",
-explicacao:"O cachorro costuma ser amigo das pessoas."},
+{nome:"Cachorro", emoji:"🐶", resposta:"amigo",
+explicacao:"O cachorro costuma ser um grande amigo das pessoas."},
 
-{emoji:"🦁", resposta:"perigoso",
+{nome:"Leão", emoji:"🦁", resposta:"perigoso",
 explicacao:"O leão é forte e vive na natureza."},
 
-{emoji:"🐝", resposta:"perigoso",
+{nome:"Abelha", emoji:"🐝", resposta:"perigoso",
 explicacao:"A abelha pode picar se ficar assustada."},
 
-{emoji:"🐸", resposta:"amigo",
+{nome:"Sapo", emoji:"🐸", resposta:"amigo",
 explicacao:"O sapo ajuda a natureza comendo insetos."},
 
-{emoji:"🐢", resposta:"amigo",
-explicacao:"A tartaruga é tranquila."},
+{nome:"Tartaruga", emoji:"🐢", resposta:"amigo",
+explicacao:"A tartaruga é tranquila e não machuca pessoas."},
 
-{emoji:"🕷️", resposta:"perigoso",
+{nome:"Aranha", emoji:"🕷️", resposta:"perigoso",
 explicacao:"Algumas aranhas podem picar."},
 
-{emoji:"🦋", resposta:"amigo",
-explicacao:"A borboleta é delicada."},
+{nome:"Borboleta", emoji:"🦋", resposta:"amigo",
+explicacao:"A borboleta é delicada e ajuda a natureza."},
 
-{emoji:"🐍", resposta:"perigoso",
+{nome:"Cobra", emoji:"🐍", resposta:"perigoso",
 explicacao:"Algumas cobras são perigosas."}
 
 ]
@@ -130,14 +152,19 @@ animais.forEach((animal, index)=>{
 
 let carta = document.createElement("div")
 carta.classList.add("carta")
-carta.innerHTML="❓"
+
+carta.innerHTML = `<div class="numero">${index+1}</div>`
 
 carta.onclick=()=>{
 
-if(cartaAtual!=null)return
+if(cartaAtual!=null) return
 
 carta.classList.add("virada")
-carta.innerHTML=animal.emoji
+
+carta.innerHTML = `
+<div class="animal">${animal.emoji}</div>
+<div class="nome">${animal.nome}</div>
+`
 
 cartaAtual = animal
 
@@ -151,11 +178,9 @@ tabuleiro.appendChild(carta)
 
 function responder(escolha){
 
-if(!cartaAtual)return
+if(!cartaAtual) return
 
-let correta = cartaAtual.resposta
-
-if(escolha == correta){
+if(escolha == cartaAtual.resposta){
 
 document.getElementById("resposta").innerHTML="🎉 Muito bem!"
 
@@ -165,7 +190,8 @@ document.getElementById("resposta").innerHTML="🙂 Vamos aprender!"
 
 }
 
-document.getElementById("explicacao").innerHTML=cartaAtual.explicacao
+document.getElementById("explicacao").innerHTML =
+cartaAtual.explicacao
 
 cartaAtual = null
 
