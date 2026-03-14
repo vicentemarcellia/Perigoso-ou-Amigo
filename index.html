@@ -146,12 +146,10 @@ opacity:0;
 <div id="resposta"></div>
 <div id="explicacao"></div>
 
-<!-- música -->
 <audio id="musica" loop>
 <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7f1c88c7d0.mp3">
 </audio>
 
-<!-- som carta -->
 <audio id="somCarta">
 <source src="https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3">
 </audio>
@@ -188,7 +186,19 @@ explicacao:"Algumas aranhas podem picar."},
 explicacao:"A borboleta é delicada."},
 
 {nome:"Cobra",emoji:"🐍",resposta:"perigoso",
-explicacao:"Algumas cobras são perigosas."}
+explicacao:"Algumas cobras são perigosas."},
+
+{nome:"Elefante",emoji:"🐘",resposta:"amigo",
+explicacao:"O elefante é grande, mas geralmente é tranquilo."},
+
+{nome:"Gato",emoji:"🐱",resposta:"amigo",
+explicacao:"O gato é um animal doméstico que pode ser amigo das pessoas."},
+
+{nome:"Crocodilo",emoji:"🐊",resposta:"perigoso",
+explicacao:"O crocodilo é um animal selvagem e pode ser perigoso."},
+
+{nome:"Escorpião",emoji:"🦂",resposta:"perigoso",
+explicacao:"O escorpião pode picar e devemos manter distância."}
 
 ]
 
@@ -266,7 +276,6 @@ if(!cartaAtual) return
 if(escolha===cartaAtual.resposta){
 
 document.getElementById("resposta").innerHTML="🎉 Muito bem!"
-
 confete()
 
 }else{
@@ -278,7 +287,6 @@ document.getElementById("resposta").innerHTML="🙂 Vamos aprender!"
 document.getElementById("explicacao").innerHTML=cartaAtual.explicacao
 
 cartaAtual=null
-
 document.getElementById("botoes").style.display="none"
 
 }
